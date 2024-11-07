@@ -1,0 +1,35 @@
+name: committest
+
+on:
+#  push:
+  #  branches:
+  #    - main  # Trigger on push to main branch; change as needed
+  workflow_dispatch:
+
+  
+jobs:
+  create-nicpollo-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create Commit txt for last 24 hr
+        run: |
+          git log  -p --since="24 hours ago" > commits_Last24hr-p.txt
+          git log --since="24 hours ago" > commits_Last24hr.txt
+
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            commits_Last24hr.txt
+            commits_Last24hr-p.txt
+    
+          tag_name: ${{ github.run_number }}
+          token: ${{secrets.GITHUB_TOKEN}}
+          
+# git log  --stat --since="48 hours ago" > commit.txt
+# git log main --since="24 hours ago" > commit.txt
